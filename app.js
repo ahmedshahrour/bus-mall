@@ -48,18 +48,19 @@ for (let i = 0; i < imgArray.length; i++) {
 }
 
 function render() {
+  let noRepetition =[leftIndex ,centerIndex ,rightIndex];
   leftIndex = randomNumber(0, imgArray.length - 1);
   do {
     rightIndex = randomNumber(0, imgArray.length - 1);
     centerIndex = randomNumber(0, imgArray.length - 1);
-  } while (leftIndex === rightIndex || centerIndex === leftIndex || rightIndex === centerIndex);
+  } while (leftIndex === rightIndex || centerIndex === leftIndex || rightIndex === centerIndex || noRepetition.includes(centerIndex) ||noRepetition.includes(rightIndex));
   rightImage.src = Images.all[rightIndex].src;
   leftImage.src = Images.all[leftIndex].src;
   centerImage.src = Images.all[centerIndex].src;
   Images.all[rightIndex].views++;
   Images.all[leftIndex].views++;
   Images.all[centerIndex].views++;
-  console.log(Images.all);
+  console.log(noRepetition);
 }
 
 
@@ -67,6 +68,7 @@ function eventHandler(e) {
   // console.log(e.target.id);
   if ((e.target.id === 'rightImage' || e.target.id === 'leftImage' || e.target.id === 'centerImage') && counter < 25) {
     console.log(counter);
+    
     if (e.target.id === 'rightImage') {
       Images.all[rightIndex].click++;
     }
@@ -77,6 +79,7 @@ function eventHandler(e) {
       Images.all[leftIndex].click++;
     }
     console.log(Images.all);
+    localStorage.setItem('products', JSON.stringify(Images.all));
     render();
     counter++;
   }
@@ -120,6 +123,37 @@ function drawChart() {
     view.push(Images.all[i].views);
     clicks.push(Images.all[i].click);
   }
+  imageSection.addEventListener('click', eventHandler);
+proceed.addEventListener('click', printresult);
+function getData() {
+    let data = JSON.parse(localStorage.getItem('product'));
+    if (data) {
+      Images.all = [];
+        for (let i = 0; i < data.length; i++) {
+            new Images(data[i].name, data[i].path, data[i].clicked, data[i].views);
+        }
+
+    }
+}
+getData();
+function randomProduct(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    let randomImg = Math.floor(Math.random() * (max - min + 1) + min);
+    return randomImg;
+}
+
+render();
+// function drawChart() {
+//     let name = [];
+//     let view = [];
+//     let click = [];
+//     for (let i = 0; i < imagesArr.length; i++) {
+//         name.push(Images.all[i].name);
+//         view.push(Images.all[i].views);
+//         click.push(Images.all[i].clicked);
+//     }
+   
 
   let ctx = document.getElementById('myChart').getContext('2d');
   let myChart = new Chart(ctx, {
@@ -186,3 +220,4 @@ function drawChart() {
 //   },
 //   options: options
 // });
+
